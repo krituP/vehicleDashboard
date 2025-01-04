@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:5000';
+    </script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Status Indicators -->
+        <div class="status-bar">
+            <div class="status-icon" id="parkingBrake">
+                <i class="fas fa-parking"></i>
+            </div>
+            <div class="status-icon" id="checkEngine">
+                <i class="fas fa-cog"></i>
+            </div>
+            <div class="status-icon" id="motorStatus">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="status-icon" id="batteryLow">
+                <i class="fas fa-battery-quarter"></i>
+            </div>
+        </div>
+
+        <!-- Main Gauges -->
+        <div class="gauges-container">
+            <div class="gauge-wrapper">
+                <div id="powerGauge" class="gauge"></div>
+                <div class="gauge-label">kW</div>
+                <div class="gauge-value" id="powerValue">0</div>
+            </div>
+            <div class="gauge-wrapper">
+                <div id="rpmGauge" class="gauge"></div>
+                <div class="gauge-label">RPM</div>
+                <div class="gauge-value" id="rpmValue">0</div>
+            </div>
+        </div>
+
+        <!-- Info Bar -->
+        <div class="info-bar">
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="info-value">
+                    <span id="gearRatio">N/N</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-battery-three-quarters"></i>
+                </div>
+                <div class="info-value">
+                    <span id="batteryPercentage">22</span>
+                    <span class="unit">%</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-thermometer-half"></i>
+                </div>
+                <div class="info-value">
+                    <span id="temperature">33</span>
+                    <span class="unit">°C</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <div class="info-value">
+                    <span id="rpmValue">0.0</span>
+                    <span class="unit">RPM</span>
+                </div>
+            </div>
+            <div class="info-item speed-control">
+                <div class="speed-label">MOTOR SPEED SETTING</div>
+                <div class="speed-slider-container">
+                    <input type="range" id="speedControl" min="0" max="4" step="1" value="0">
+                    <div class="speed-marks">
+                        <span>OFF</span>
+                        <span>1</span>
+                        <span>2</span>
+                        <span>3</span>
+                        <span>4</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Controls -->
+        <div class="bottom-controls">
+            <div class="control-button">
+                <i class="fas fa-cog"></i>
+            </div>
+            <div class="control-button">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="control-button">
+                <i class="fas fa-thermometer-half"></i>
+            </div>
+            <div class="control-button">
+                <i class="fas fa-th"></i>
+            </div>
+            <div class="control-button" id="chargingButton">
+                <i class="fas fa-plug"></i>
+            </div>
+            <!-- <a href="./history.html" class="control-button" id="historyButton">
+                <i class="fas fa-history"></i>
+            </a> -->
+        </div>
+    </div>
+    <script src="gauges.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
