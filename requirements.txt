@@ -5,7 +5,7 @@ Flask-SQLAlchemy==3.1.1
 
 # Firebase/Google Cloud
 firebase-admin==6.6.0       # Firebase admin SDK - 
-
+google-cloud-firestore==2.19.0  # Firestore database - 
 google-cloud-storage==2.19.0    
 google-cloud-core==2.4.1       # Core Google Cloud - 
 google-auth==2.37.0           # Authentication - 
@@ -20,7 +20,4 @@ charset-normalizer==3.4.0   #  for HTTP
 click==8.1.7               # Flask dependency - 
 
 
-google-cloud-firestore==2.3.4
-
-
-gunicorn==20.1.0
+gunicorn==21.2.0  # Latest stable version
