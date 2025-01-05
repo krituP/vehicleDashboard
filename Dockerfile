@@ -7,4 +7,5 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "api.index:app"] 
+# Use shell form to allow environment variable expansion
+CMD gunicorn --bind 0.0.0.0:${PORT:-8080} api.index:app 

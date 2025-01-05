@@ -15,8 +15,29 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
-app.config['CORS_HEADERS'] = 'Content-Type'
+CORS(app, resources={
+    r"/*": {  # Allow all routes
+        "origins": [
+            "https://kritup.github.io",
+            "http://localhost:3000",
+            "http://localhost:5000",
+            "http://127.0.0.1:5000",
+            "http://127.0.0.1:5001",
+            "http://localhost:5001",
+            "file://*"  # For local file testing
+        ],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
+
+# Add CORS headers to all responses
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
 
 # Initialize Firestore with environment detection
 try:
@@ -175,7 +196,23 @@ def update_charging_state():
         logger.error(f"Error updating charging state: {e}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/test', methods=['GET'])
+def test():
+    return jsonify({"message": "Server is running!", "status": "OK"})
 
+@app.route('/api/test', methods=['GET'])
+def test_db():
+    try:
+        doc = db.collection('vehicleStatus').document('current').get()
+        return jsonify({
+            "message": "Database connection successful",
+            "data_exists": doc.exists
+        })
+    except Exception as e:
+        return jsonify({
+            "error": str(e),
+            "message": "Database connection failed"
+        }), 500
 
 if __name__ == '__main__':
     # Initialize default values if they don't exist
@@ -212,5 +249,7 @@ if __name__ == '__main__':
             'motor.rpm': 0
         })
     
-    app.run()
+    # Use port 5001 instead of 5000
+    port = int(os.environ.get('PORT', 5001))
+    app.run(host='0.0.0.0', port=port, debug=True)
 

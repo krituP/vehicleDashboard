@@ -1,3 +1,28 @@
+// Add this at the start of your file
+console.log('API URL:', API_BASE_URL);
+
+// Add this function to test the connection
+async function testConnection() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/test`);
+        const data = await response.json();
+        console.log('Server test:', data);
+
+        const dbResponse = await fetch(`${API_BASE_URL}/api/test`);
+        const dbData = await dbResponse.json();
+        console.log('Database test:', dbData);
+
+        const statusResponse = await fetch(`${API_BASE_URL}/api/status`);
+        const statusData = await statusResponse.json();
+        console.log('Status data:', statusData);
+    } catch (error) {
+        console.error('Connection test failed:', error);
+    }
+}
+
+// Call the test function when the page loads
+document.addEventListener('DOMContentLoaded', testConnection);
+
 // Status indicator controls
 const statusIndicators = {
     parkingBrake: false,
@@ -51,7 +76,7 @@ speedSlider.addEventListener('change', async function() {
     
     try {
         // Send RPM update request to backend
-        const response = await fetch('http://127.0.0.1:5000/api/motor/rpm', {
+        const response = await fetch(`${API_BASE_URL}/api/motor/rpm`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -104,11 +129,17 @@ window.addEventListener('DOMContentLoaded', initializeGauges);
 // Function to fetch vehicle status
 async function fetchVehicleStatus() {
     try {
-        const response = await fetch('http://127.0.0.1:5000/api/status');
+        console.log('Fetching from:', `${API_BASE_URL}/api/status`); // Debug log
+        const response = await fetch(`${API_BASE_URL}/api/status`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         updateDashboard(data);
     } catch (error) {
         console.error('Error fetching vehicle status:', error);
+        // Add visual feedback for users
+        document.getElementById('connectionStatus')?.classList.add('error');
     }
 }
 
@@ -154,7 +185,7 @@ document.getElementById('chargingButton').addEventListener('click', async functi
         isCharging = !isCharging;
         
         // Update the charging state in the backend
-        const response = await fetch('http://127.0.0.1:5000/api/battery/charging', {
+        const response = await fetch(`${API_BASE_URL}/api/battery/charging`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -206,7 +237,7 @@ document.addEventListener('DOMContentLoaded', fetchVehicleStatus);
 
 document.getElementById('updateParkingBrakeButton').addEventListener('click', async function() {
     try {
-        const response = await fetch('http://127.0.0.1:5000/api/indicators/parkingBrake', {
+        const response = await fetch(`${API_BASE_URL}/api/indicators/parkingBrake`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

@@ -123,7 +123,7 @@ function createGauge(elementId, options) {
 
     return function updateGauge(value) {
         const angle = scale(value)+90;
-        console.log(angle + " angle" + value + " value");
+        //console.log(angle + " angle" + value + " value");
         // Smooth rotation transition
         needleGroup.transition()
             .duration(500)  // Duration for smooth movement

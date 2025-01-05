@@ -7,6 +7,8 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+
+
 def get_firebase_credentials():
     # Direct path to credentials file for local development
     credentials_path = os.path.join(
