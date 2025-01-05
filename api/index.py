@@ -226,4 +226,4 @@ if __name__ == '__main__':
             'motor.rpm': 0
         })
     
-    app.run(debug=True)
+    app.run()
