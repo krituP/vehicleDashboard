@@ -20,3 +20,8 @@ charset-normalizer==3.4.0   #  for HTTP
 click==8.1.7               # Flask dependency - 
 
 
+gunicorn
+flask
+google-cloud-firestore
+firebase-admin
+flask-cors
