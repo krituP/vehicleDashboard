@@ -190,7 +190,6 @@ def get_history():
     except Exception as e:
         logger.error(f"Error fetching history: {str(e)}", exc_info=True)
         return jsonify({"error": str(e)}), 500
-
 if __name__ == '__main__':
     # Initialize default values if they don't exist
     doc_ref = db.collection('vehicleStatus').document('current')
@@ -227,3 +226,4 @@ if __name__ == '__main__':
         })
     
     app.run()
+
