@@ -7,6 +7,8 @@ import threading
 import time
 from flask_cors import CORS
 import logging
+from firebase_config import get_firebase_credentials
+import json
 
 # Add logger configuration
 logger = logging.getLogger(__name__)
@@ -17,9 +19,12 @@ CORS(app)  # Enable CORS for all routes
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Set up Firestore client
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/kritupatel/Projects/VehicleDashboard/database/vehicledashboardproject-firebase-adminsdk-qndnw-43f0048e2f.json"
-
-db = firestore.Client()
+try:
+    credentials = get_firebase_credentials()
+    db = firestore.Client(credentials=credentials)
+except Exception as e:
+    logger.error(f"Failed to initialize Firestore: {e}")
+    raise
 
 # Constants
 BATTERY_DRAIN_RATE = 0.1  # % per second when motor is running
