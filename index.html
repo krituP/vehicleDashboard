@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Basic meta tags for character encoding and responsive design -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vehicle Dashboard</title>
     <link rel="stylesheet" href="frontend/src/styles.css">
-    <!-- Add Font Awesome for icons -->
+    <!-- External libraries for icons and visualization -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Add Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Add D3.js -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
+        // Dynamic API URL based on environment (local vs production)
         const API_BASE_URL = window.location.hostname === 'localhost' 
             ? 'http://127.0.0.1:5000' 
             : 'https://vehicle-dashboard-zeta.vercel.app/';
@@ -19,29 +19,35 @@
 </head>
 <body>
     <div class="dashboard">
-        <!-- Status Indicators -->
+        <!-- Status bar section with indicator icons -->
         <div class="status-bar">
+            <!-- Parking brake indicator -->
             <div class="status-icon" id="parkingBrake">
                 <i class="fas fa-parking"></i>
             </div>
+            <!-- Check engine indicator -->
             <div class="status-icon" id="checkEngine">
                 <i class="fas fa-cog"></i>
             </div>
+            <!-- Motor status indicator -->
             <div class="status-icon" id="motorStatus">
                 <i class="fas fa-bolt"></i>
             </div>
+            <!-- Low battery indicator -->
             <div class="status-icon" id="batteryLow">
                 <i class="fas fa-battery-quarter"></i>
             </div>
         </div>
 
-        <!-- Main Gauges -->
+        <!-- Main gauge displays section -->
         <div class="gauges-container">
+            <!-- Power gauge (kW) -->
             <div class="gauge-wrapper">
                 <div id="powerGauge" class="gauge"></div>
                 <div class="gauge-label">kW</div>
                 <div class="gauge-value" id="powerValue">0</div>
             </div>
+            <!-- RPM gauge -->
             <div class="gauge-wrapper">
                 <div id="rpmGauge" class="gauge"></div>
                 <div class="gauge-label">RPM</div>
@@ -49,8 +55,9 @@
             </div>
         </div>
 
-        <!-- Info Bar -->
+        <!-- Information display bar -->
         <div class="info-bar">
+            <!-- Gear ratio display -->
             <div class="info-item">
                 <div class="info-icon">
                     <i class="fas fa-cog"></i>
@@ -59,6 +66,7 @@
                     <span id="gearRatio">N/N</span>
                 </div>
             </div>
+            <!-- Battery percentage display -->
             <div class="info-item">
                 <div class="info-icon">
                     <i class="fas fa-battery-three-quarters"></i>
@@ -68,6 +76,7 @@
                     <span class="unit">%</span>
                 </div>
             </div>
+            <!-- Temperature display -->
             <div class="info-item">
                 <div class="info-icon">
                     <i class="fas fa-thermometer-half"></i>
@@ -77,6 +86,7 @@
                     <span class="unit">°C</span>
                 </div>
             </div>
+            <!-- RPM value display -->
             <div class="info-item">
                 <div class="info-icon">
                     <i class="fas fa-tachometer-alt"></i>
@@ -86,6 +96,7 @@
                     <span class="unit">RPM</span>
                 </div>
             </div>
+            <!-- Motor speed control slider -->
             <div class="info-item speed-control">
                 <div class="speed-label">MOTOR SPEED SETTING</div>
                 <div class="speed-slider-container">
@@ -101,20 +112,25 @@
             </div>
         </div>
 
-        <!-- Bottom Controls -->
+        <!-- Bottom control buttons -->
         <div class="bottom-controls">
+            <!-- Settings button -->
             <div class="control-button">
                 <i class="fas fa-cog"></i>
             </div>
+            <!-- Power button -->
             <div class="control-button">
                 <i class="fas fa-bolt"></i>
             </div>
+            <!-- Temperature button -->
             <div class="control-button">
                 <i class="fas fa-thermometer-half"></i>
             </div>
+            <!-- Grid view button -->
             <div class="control-button">
                 <i class="fas fa-th"></i>
             </div>
+            <!-- Charging control button -->
             <div class="control-button" id="chargingButton">
                 <i class="fas fa-plug"></i>
             </div>
@@ -123,6 +139,7 @@
             </a> -->
         </div>
     </div>
+    <!-- JavaScript files for functionality -->
     <script src="frontend/src/gauges.js"></script>
     <script src="frontend/src/dashboard.js"></script>
 </body>

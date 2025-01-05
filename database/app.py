@@ -7,8 +7,6 @@ import threading
 import time
 from flask_cors import CORS
 import logging
-from firebase_config import get_firebase_credentials
-import json
 
 # Add logger configuration
 logger = logging.getLogger(__name__)
@@ -18,24 +16,10 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-# Initialize Firestore with environment detection
-try:
-    if 'GOOGLE_CREDENTIALS' in os.environ:
-        # Vercel environment
-        credentials_info = json.loads(os.environ['GOOGLE_CREDENTIALS'])
-        cred_path = '/tmp/credentials.json'
-        with open(cred_path, 'w') as f:
-            json.dump(credentials_info, f)
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = cred_path
-    else:
-        # Local environment
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/kritupatel/Projects/VehicleDashboard/database/vehicledashboardproject-firebase-adminsdk-qndnw-43f0048e2f.json"
-    
-    db = firestore.Client()
-    print("Firestore initialized successfully")
-except Exception as e:
-    print(f"Firestore initialization error: {e}")
-    db = None
+# Set up Firestore client
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/kritupatel/Projects/VehicleDashboard/database/vehicledashboardproject-firebase-adminsdk-qndnw-43f0048e2f.json"
+
+db = firestore.Client()
 
 # Constants
 BATTERY_DRAIN_RATE = 0.1  # % per second when motor is running
@@ -113,7 +97,7 @@ def update_battery_status():
                 doc_ref.update(updates)
                 # After updating current status, store historical data
                 current_data = doc_ref.get().to_dict()
-                # store_historical_data(current_data)
+                #store_historical_data(current_data)
             
         except Exception as e:
             print(f"Error in background thread: {e}")
@@ -155,27 +139,57 @@ def update_rpm():
 @app.route('/api/battery/charging', methods=['PUT'])
 def update_charging_state():
     """Update charging state"""
+    data = request.json
+    is_charging = data.get('isCharging', True)
+    
+    doc_ref = db.collection('vehicleStatus').document('current')
+    
+    updates = {
+        'battery.isCharging': is_charging,
+        'motor.rpm': 0 if is_charging else 0  # Stop motor when charging
+    }
+    
+    doc_ref.update(updates)
+    return jsonify({"success": True, "isCharging": is_charging})
+
+def set_charging_status(is_charging):
+    """Function to set charging status"""
+    doc_ref = db.collection('vehicleStatus').document('current')
+    
+    updates = {
+        'battery.isCharging': is_charging,
+        'motor.rpm': 0 if is_charging else 0  # Stop motor when charging
+    }
+    
+    doc_ref.update(updates)
+    print(f"Charging status updated to: {is_charging}")
+
+@app.route('/api/history', methods=['GET'])
+def get_history():
+    """Get historical vehicle data"""
     try:
-        data = request.json
-        is_charging = data.get('isCharging', True)
+        # Get the 10 most recent records by default
+        limit = int(request.args.get('limit', 10))
         
-        doc_ref = db.collection('vehicleStatus').document('current')
+        # Query the most recent records
+        query = (db.collection('vehicleHistory')
+                .order_by('timestamp', direction=firestore.Query.DESCENDING)
+                .limit(limit))
         
-        # Add logging to debug
-        logger.info(f"Updating charging state to: {is_charging}")
+        docs = query.stream()
+        history = []
         
-        updates = {
-            'battery.isCharging': is_charging,
-            'motor.rpm': 0  # Stop motor when charging
-        }
+        for doc in docs:
+            data = doc.to_dict()
+            # Convert timestamp to string for JSON serialization
+            data['timestamp'] = data['timestamp'].isoformat()
+            history.append(data)
         
-        doc_ref.update(updates)
-        return jsonify({"success": True, "isCharging": is_charging})
+        return jsonify(history)
+    
     except Exception as e:
-        logger.error(f"Error updating charging state: {e}")
+        logger.error(f"Error fetching history: {str(e)}", exc_info=True)
         return jsonify({"error": str(e)}), 500
-
-
 
 if __name__ == '__main__':
     # Initialize default values if they don't exist
@@ -212,5 +226,4 @@ if __name__ == '__main__':
             'motor.rpm': 0
         })
     
-    app.run()
-
+    app.run(debug=True)

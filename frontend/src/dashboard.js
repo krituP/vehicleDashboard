@@ -6,10 +6,12 @@ const statusIndicators = {
     batteryLow: false
 };
 
+// Function to update visual state of status indicators
 function updateStatusIndicator(id, isActive) {
     const indicator = document.getElementById(id);
     if (indicator) {
         statusIndicators[id] = isActive;
+        // Add or remove 'active' class based on state
         if (isActive) {
             indicator.classList.add('active');
         } else {
@@ -30,9 +32,7 @@ document.getElementById('parkingBrake').addEventListener('click', () => {
     updateStatusIndicator('parkingBrake', newState);
 });
 
-//test 
-
-// Speed settings to RPM mapping
+// Mapping of speed settings to RPM values
 const speedToRPM = {
     0: 0,     // OFF position
     1: 200,   // Speed setting 1
@@ -50,6 +50,7 @@ speedSlider.addEventListener('change', async function() {
     const targetRPM = speedToRPM[speedSetting];
     
     try {
+        // Send RPM update request to backend
         const response = await fetch('http://127.0.0.1:5000/api/motor/rpm', {
             method: 'PUT',
             headers: {
@@ -61,7 +62,7 @@ speedSlider.addEventListener('change', async function() {
         
         if (response.ok) {
             console.log('RPM updated successfully:', targetRPM);
-            rpmGauge(targetRPM);
+            rpmGauge(targetRPM);  // Update gauge display
             document.getElementById('currentRpm').textContent = `${targetRPM} RPM`;
         } else {
             console.error('Failed to update RPM:', data.error);
@@ -153,7 +154,7 @@ document.getElementById('chargingButton').addEventListener('click', async functi
         isCharging = !isCharging;
         
         // Update the charging state in the backend
-        const response = await fetch(`${API_BASE_URL}/api/battery/charging`, {
+        const response = await fetch('http://127.0.0.1:5000/api/battery/charging', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -267,15 +268,7 @@ function updateRPMGauge(rpm) {
 document.addEventListener('DOMContentLoaded', () => {
     // ... other initialization code ...
 
-    // Add click handler for history button
-    const historyButton = document.getElementById('historyButton');
-    if (historyButton) {
-        historyButton.addEventListener('click', () => {
-            console.log('History button clicked'); // For debugging
-            window.location.href = 'history.html';
-        });
-    } else {
-        console.error('History button not found!'); // For debugging
-    }
+   
+    
 });
 
