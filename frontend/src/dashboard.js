@@ -129,12 +129,23 @@ window.addEventListener('DOMContentLoaded', initializeGauges);
 // Function to fetch vehicle status
 async function fetchVehicleStatus() {
     try {
-        console.log('Fetching from:', `${API_BASE_URL}/api/status`); // Debug log
         const response = await fetch(`${API_BASE_URL}/api/status`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+        
+        // Update speed control slider if motor is running
+        const currentRPM = data.motor?.rpm || 0;
+        if (currentRPM > 0) {
+            const speedSetting = rpmToSpeedSetting(currentRPM);
+            const speedSlider = document.getElementById('speedControl');
+            if (speedSlider) {
+                speedSlider.value = speedSetting;
+            }
+        }
+        
+        // Rest of your existing updateDashboard code
         updateDashboard(data);
     } catch (error) {
         console.error('Error fetching vehicle status:', error);
@@ -299,7 +310,34 @@ function updateRPMGauge(rpm) {
 document.addEventListener('DOMContentLoaded', () => {
     // ... other initialization code ...
 
-   
-    
+    fetchVehicleStatus();  // Initial fetch
+    // Your existing interval setup
+    setInterval(fetchVehicleStatus, 1000);
 });
+
+// Add this function to convert RPM to speed setting
+function rpmToSpeedSetting(rpm) {
+    // Your existing RPM mappings
+    const rpmToSpeed = {
+        0: 0,
+        200: 1,
+        400: 2,
+        600: 3,
+        800: 4
+    };
+    
+    // Find the closest matching speed setting
+    let closestRPM = 0;
+    let closestDiff = Infinity;
+    
+    for (const [currentRPM, _] of Object.entries(rpmToSpeed)) {
+        const diff = Math.abs(rpm - currentRPM);
+        if (diff < closestDiff) {
+            closestDiff = diff;
+            closestRPM = currentRPM;
+        }
+    }
+    
+    return rpmToSpeed[closestRPM];
+}
 
