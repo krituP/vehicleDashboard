@@ -136,7 +136,7 @@ def update_battery_status():
                 current_data = doc_ref.get().to_dict()
                 
                 # commented out to reduce writes to database, uncomment to store historical data
-                #store_historical_data(current_data)
+                store_historical_data(current_data)
             
         except Exception as e:
             print(f"Error in background thread: {e}")
@@ -215,6 +215,35 @@ def test_db():
             "error": str(e),
             "message": "Database connection failed"
         }), 500
+
+@app.route('/api/history', methods=['GET'])
+def get_history():
+    """Get historical vehicle data"""
+    try:
+        print("Fetching historical data...") # Debug log
+        
+        # Query the vehicleHistory collection
+        docs = db.collection('vehicleHistory').order_by('timestamp', direction='DESCENDING').stream()
+        
+        # Convert the documents to a list of dictionaries
+        history = []
+        for doc in docs:
+            data = doc.to_dict()
+            # Convert timestamp to a serializable format
+            if 'timestamp' in data:
+                data['timestamp'] = {
+                    '_seconds': int(data['timestamp'].timestamp()),
+                    '_nanoseconds': 0
+                }
+            history.append(data)
+        
+        print(f"Found {len(history)} historical records") # Debug log
+        print(f"Sample data: {history[:1] if history else 'No data'}") # Debug log
+        
+        return jsonify(history)
+    except Exception as e:
+        print(f"Error fetching historical data: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     # Initialize default values if they don't exist
