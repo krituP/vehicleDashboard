@@ -63,7 +63,7 @@ BATTERY_DRAIN_RATE = 0.1  # % per second when motor is running
 CHARGING_RATE = 0.2  # % per second when charging
 TEMP_INCREASE_RATE = 0.1  # °C per second when motor is running
 TEMP_DECREASE_RATE = 0.05  # °C per second when motor is off
-HISTORY_INTERVAL = 0.5  # Store historical data every 0.5 seconds
+HISTORY_INTERVAL = 3.0 # Store historical data every 3 seconds
 LAST_HISTORY_UPDATE = 0  # Track last update time
 
 def calculate_power_consumption(rpm):
@@ -144,7 +144,7 @@ def update_battery_status():
                 current_data = doc_ref.get().to_dict()
                 
                 # commented out to reduce writes to database, uncomment to store historical data
-                store_historical_data(current_data)
+                #store_historical_data(current_data)
             
         except Exception as e:
             print(f"Error in background thread: {e}")
@@ -226,35 +226,30 @@ def test_db():
 
 @app.route('/api/history', methods=['GET'])
 def get_history():
-    """Get historical vehicle data with pagination"""
+    """Get historical vehicle data (limited to most recent 100 entries)"""
     try:
-        # Get pagination parameters
-        page_size = int(request.args.get('limit', 100))  # Default 100 records
-        last_timestamp = request.args.get('last_timestamp', None)
+        print("Fetching historical data...") # Debug log
         
-        # Build query
-        query = db.collection('vehicleHistory')\
+        # Query the vehicleHistory collection with limit
+        docs = db.collection('vehicleHistory')\
             .order_by('timestamp', direction='DESCENDING')\
-            .limit(page_size)
-            
-        if last_timestamp:
-            # Convert timestamp string to datetime
-            last_time = datetime.fromtimestamp(float(last_timestamp))
-            query = query.start_after({'timestamp': last_time})
+            .limit(100)\
+            .stream()
         
-        # Execute query
-        docs = query.stream()
-        
-        # Convert to list
+        # Convert the documents to a list of dictionaries
         history = []
         for doc in docs:
             data = doc.to_dict()
+            # Convert timestamp to a serializable format
             if 'timestamp' in data:
                 data['timestamp'] = {
                     '_seconds': int(data['timestamp'].timestamp()),
                     '_nanoseconds': 0
                 }
             history.append(data)
+        
+        print(f"Found {len(history)} historical records") # Debug log
+        print(f"Sample data: {history[:1] if history else 'No data'}") # Debug log
         
         return jsonify(history)
     except Exception as e:
