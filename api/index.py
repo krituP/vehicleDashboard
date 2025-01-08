@@ -70,23 +70,23 @@ def calculate_power_consumption(rpm):
         return (rpm * 1000/800)
     return 0
 
-# def store_historical_data(data):
-#     """Store vehicle data with timestamp"""
-#     try:
-#         timestamp = datetime.now()
-#         historical_data = {
-#             'timestamp': timestamp,
-#             'rpm': data.get('motor', {}).get('rpm', 0),
-#             'power_consumption': data.get('motor', {}).get('powerConsumption', 0),
-#             'battery_percentage': data.get('battery', {}).get('percentage', 0),
-#             'temperature': data.get('battery', {}).get('temperature', 0),
-#             'is_charging': data.get('battery', {}).get('isCharging', False)
-#         }
+def store_historical_data(data):
+    """Store vehicle data with timestamp"""
+    try:
+        timestamp = datetime.now()
+        historical_data = {
+            'timestamp': timestamp,
+            'rpm': data.get('motor', {}).get('rpm', 0),
+            'power_consumption': data.get('motor', {}).get('powerConsumption', 0),
+            'battery_percentage': data.get('battery', {}).get('percentage', 0),
+            'temperature': data.get('battery', {}).get('temperature', 0),
+            'is_charging': data.get('battery', {}).get('isCharging', False)
+        }
         
-#         # Store in a new collection called 'vehicleHistory'
-#         db.collection('vehicleHistory').add(historical_data)
-#     except Exception as e:
-#         print(f"Error storing historical data: {e}")
+        # Store in a new collection called 'vehicleHistory'
+        db.collection('vehicleHistory').add(historical_data)
+    except Exception as e:
+        print(f"Error storing historical data: {e}")
 
 def update_battery_status():
     """Background thread to update battery status"""
@@ -134,7 +134,9 @@ def update_battery_status():
                 doc_ref.update(updates)
                 # After updating current status, store historical data
                 current_data = doc_ref.get().to_dict()
-                # store_historical_data(current_data)
+                
+                # commented out to reduce writes to database, uncomment to store historical data
+                #store_historical_data(current_data)
             
         except Exception as e:
             print(f"Error in background thread: {e}")

@@ -25,7 +25,7 @@ def get_firebase_credentials():
         # logger.debug("Found credentials file")
         return credentials_path
         
-    # For Vercel deployment
+    # For Vercel/Render deployment
     if os.getenv('FIREBASE_CREDENTIALS'):
         # logger.debug("Using FIREBASE_CREDENTIALS environment variable")
         credentials_dict = json.loads(os.getenv('FIREBASE_CREDENTIALS'))
