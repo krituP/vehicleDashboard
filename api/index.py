@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from google.cloud import firestore
 from firebase_admin import credentials
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import threading
 import time
 from flask_cors import CORS
@@ -63,6 +63,8 @@ BATTERY_DRAIN_RATE = 0.1  # % per second when motor is running
 CHARGING_RATE = 0.2  # % per second when charging
 TEMP_INCREASE_RATE = 0.1  # °C per second when motor is running
 TEMP_DECREASE_RATE = 0.05  # °C per second when motor is off
+HISTORY_INTERVAL = 0.5  # Store historical data every 0.5 seconds
+LAST_HISTORY_UPDATE = 0  # Track last update time
 
 def calculate_power_consumption(rpm):
     """Standardized power consumption calculation"""
@@ -72,21 +74,27 @@ def calculate_power_consumption(rpm):
 
 def store_historical_data(data):
     """Store vehicle data with timestamp"""
-    try:
-        timestamp = datetime.now()
-        historical_data = {
-            'timestamp': timestamp,
-            'rpm': data.get('motor', {}).get('rpm', 0),
-            'power_consumption': data.get('motor', {}).get('powerConsumption', 0),
-            'battery_percentage': data.get('battery', {}).get('percentage', 0),
-            'temperature': data.get('battery', {}).get('temperature', 0),
-            'is_charging': data.get('battery', {}).get('isCharging', False)
-        }
-        
-        # Store in a new collection called 'vehicleHistory'
-        db.collection('vehicleHistory').add(historical_data)
-    except Exception as e:
-        print(f"Error storing historical data: {e}")
+    global LAST_HISTORY_UPDATE
+    current_time = time.time()
+    
+    # Only store if enough time has passed
+    if current_time - LAST_HISTORY_UPDATE >= HISTORY_INTERVAL:
+        try:
+            timestamp = datetime.now()
+            historical_data = {
+                'timestamp': timestamp,
+                'rpm': data.get('motor', {}).get('rpm', 0),
+                'power_consumption': data.get('motor', {}).get('powerConsumption', 0),
+                'battery_percentage': data.get('battery', {}).get('percentage', 0),
+                'temperature': data.get('battery', {}).get('temperature', 0),
+                'is_charging': data.get('battery', {}).get('isCharging', False)
+            }
+            
+            db.collection('vehicleHistory').add(historical_data)
+            LAST_HISTORY_UPDATE = current_time
+            print(f"Historical data stored at {timestamp}")
+        except Exception as e:
+            print(f"Error storing historical data: {e}")
 
 def update_battery_status():
     """Background thread to update battery status"""
@@ -218,18 +226,29 @@ def test_db():
 
 @app.route('/api/history', methods=['GET'])
 def get_history():
-    """Get historical vehicle data"""
+    """Get historical vehicle data with pagination"""
     try:
-        print("Fetching historical data...") # Debug log
+        # Get pagination parameters
+        page_size = int(request.args.get('limit', 100))  # Default 100 records
+        last_timestamp = request.args.get('last_timestamp', None)
         
-        # Query the vehicleHistory collection
-        docs = db.collection('vehicleHistory').order_by('timestamp', direction='DESCENDING').stream()
+        # Build query
+        query = db.collection('vehicleHistory')\
+            .order_by('timestamp', direction='DESCENDING')\
+            .limit(page_size)
+            
+        if last_timestamp:
+            # Convert timestamp string to datetime
+            last_time = datetime.fromtimestamp(float(last_timestamp))
+            query = query.start_after({'timestamp': last_time})
         
-        # Convert the documents to a list of dictionaries
+        # Execute query
+        docs = query.stream()
+        
+        # Convert to list
         history = []
         for doc in docs:
             data = doc.to_dict()
-            # Convert timestamp to a serializable format
             if 'timestamp' in data:
                 data['timestamp'] = {
                     '_seconds': int(data['timestamp'].timestamp()),
@@ -237,12 +256,31 @@ def get_history():
                 }
             history.append(data)
         
-        print(f"Found {len(history)} historical records") # Debug log
-        print(f"Sample data: {history[:1] if history else 'No data'}") # Debug log
-        
         return jsonify(history)
     except Exception as e:
         print(f"Error fetching historical data: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/cleanup', methods=['POST'])
+def cleanup_old_data():
+    """Remove historical data older than 24 hours"""
+    try:
+        # Calculate cutoff time (24 hours ago)
+        cutoff_time = datetime.now() - timedelta(hours=24)
+        
+        # Get old documents
+        old_docs = db.collection('vehicleHistory')\
+            .where('timestamp', '<', cutoff_time)\
+            .stream()
+        
+        # Delete old documents
+        deleted_count = 0
+        for doc in old_docs:
+            doc.reference.delete()
+            deleted_count += 1
+        
+        return jsonify({"message": f"Deleted {deleted_count} old records"})
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
