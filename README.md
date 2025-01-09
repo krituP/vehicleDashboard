@@ -45,7 +45,7 @@ D[Background Tasks] -->|Update Vehicle Status| B
 
 ### Frontend Features
 
-mermaid
+
 graph LR
 A[Dashboard] --> B[Gauges]
 A --> C[Status Indicators]
