@@ -19,7 +19,7 @@ A real-time vehicle dashboard simulator that emulates key vehicle metrics includ
 
 ```mermaid
     graph TD
-        A[Frontend] -->|HTTP Requests| B[Flask Backend(API)]
+        A[Frontend] -->|HTTP Requests| B[Flask Backend]
         B -->|Store/Retrieve| C[Firestore Database]
         B -->|Real-time Updates| A
         D[Background Tasks] -->|Update Vehicle Status| B
@@ -97,28 +97,7 @@ A real-time vehicle dashboard simulator that emulates key vehicle metrics includ
 | Edge | 79+ |
 
 
-bash
-git clone https://github.com/kritup/VehicleDashboard.git
-cd VehicleDashboard
-backend
-bash
-Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate # On Windows: venv\Scripts\activate
-Install required packages
-pip install -r requirements.txt
-Set up Firebase credentials
-Place your firebase-adminsdk.json file in the database folder
-OR set GOOGLE_CREDENTIALS environment variable
-Start the Flask server
-python api/index.py
-:
-bash
-python -m http.server 3000
 
-- Navigate to `http://localhost:3000` in your browser
-
-### Option 2: Access Live Demo
 
 Visit [kritupatel.com/vehicleDashboard](https://kritupatel.com/vehicleDashboard)
 
