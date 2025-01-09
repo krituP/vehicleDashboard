@@ -87,14 +87,9 @@ A real-time vehicle dashboard simulator that emulates key vehicle metrics includ
 - Automatic cleanup of data older than 24 hours
 - Rate limiting implemented for API calls
 
-## Browser Compatibility
 
-| Browser | Supported Versions |
-|---------|-------------------|
-| Chrome | 60+ |
-| Firefox | 60+ |
-| Safari | 12+ |
-| Edge | 79+ |
+
+
 
 
 
@@ -119,6 +114,65 @@ Visit [kritupatel.com/vehicleDashboard](https://kritupatel.com/vehicleDashboard)
    - Speed control slider (0-4 settings)
    - Charging toggle
    - History view
+  
+
+
+# Local Setup Instructions
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/kritup/VehicleDashboard.git
+   cd VehicleDashboard
+   ```
+
+2. Set up Firebase
+   - Go to Firebase Console (https://console.firebase.google.com/)
+   - Create a new project or select existing project
+   - Go to Project Settings > Service Accounts
+   - Click "Generate New Private Key"
+   - Create a folder named 'database' in project root
+   - Save the downloaded JSON file in the 'database' folder
+   - Rename the file to: `vehicledashboardproject-firebase-adminsdk.json`
+
+3. Create and activate Python virtual environment
+   ```bash
+   # For macOS/Linux
+   python3 -m venv venv
+   source venv/bin/activate
+
+   # For Windows
+   python -m venv venv
+   .\venv\Scripts\activate
+   ```
+
+4. Install required packages
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. Start the backend server
+   ```bash
+   python api/index.py
+   ```
+   Server will start on http://localhost:5001
+
+6. Open the frontend
+   - Simply open `index.html` in your web browser
+   OR
+   - Start a local server:
+     ```bash
+     python -m http.server 3000
+     ```
+   - Navigate to http://localhost:3000 in your browser
+
+The application should now be running locally with:
+- Backend at http://localhost:5001
+- Frontend at http://localhost:3000 (if using local server)
+
+To verify everything is working:
+- Check browser console for any errors
+- Visit http://localhost:5001/test to verify backend is running
+- Visit http://localhost:5001/api/test to verify database connection
 
 ### Troubleshooting
 - If gauges don't update, check the browser console for connection errors
