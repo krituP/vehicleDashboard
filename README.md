@@ -3,7 +3,7 @@
 ## Overview
 A real-time vehicle dashboard simulator that emulates key vehicle metrics including motor RPM, power consumption, battery status, and temperature. Built with Python (Flask) backend and vanilla JavaScript frontend.
 
-![Dashboard Preview](path_to_dashboard_screenshot.png) <!-- Add a screenshot of your dashboard here -->
+<img width="1348" alt="image" src="https://github.com/user-attachments/assets/55bd0556-f730-4716-bb42-047ac322b96b" />
 
 ## Features
 
