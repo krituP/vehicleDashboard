@@ -17,12 +17,13 @@ A real-time vehicle dashboard simulator that emulates key vehicle metrics includ
 
 ## System Architecture
 
-mermaid
-graph TD
-A[Frontend] -->|HTTP Requests| B[Flask Backend]
-B -->|Store/Retrieve| C[Firestore Database]
-B -->|Real-time Updates| A
-D[Background Tasks] -->|Update Vehicle Status| B
+```mermaid
+    graph TD
+        A[Frontend] -->|HTTP Requests| B[Flask Backend]
+        B -->|Store/Retrieve| C[Firestore Database]
+        B -->|Real-time Updates| A
+        D[Background Tasks] -->|Update Vehicle Status| B
+``` 
 
 
 ## Technical Stack
