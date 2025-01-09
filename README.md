@@ -95,27 +95,7 @@ A real-time vehicle dashboard simulator that emulates key vehicle metrics includ
         E[Cleanup Service] -->|Delete Old Records| C
 ```
 
-json
-{
-"motor": {
-"rpm": 0,
-"powerConsumption": 0,
-"gearRatio": "3:1",
-"isActive": false
-},
-"battery": {
-"percentage": 100,
-"temperature": 25,
-"isCharging": false,
-"lowBatteryThreshold": 20
-},
-"indicators": {
-"parkingBrake": false,
-"checkEngine": false,
-"motorActive": false,
-"batteryLow": false
-}
-}
+
 
 ## Setup and Installation
 
