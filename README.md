@@ -46,18 +46,18 @@ D[Background Tasks] -->|Update Vehicle Status| B
 ### Frontend Features
 
 
-mermaid
-graph LR
-A[Dashboard] --> B[Gauges]
-A --> C[Status Indicators]
-A --> D[Control Panel]
-B --> E[RPM Gauge]
-B --> F[Power Gauge]
-C --> G[Battery Status]
-C --> H[Temperature]
-D --> I[Speed Control]
-D --> J[Charging Control]
-
+```mermaid
+    graph LR
+        A[Dashboard] --> B[Gauges]
+        A --> C[Status Indicators]
+        A --> D[Control Panel]
+        B --> E[RPM Gauge]
+        B --> F[Power Gauge]
+        C --> G[Battery Status]
+        C --> H[Temperature]
+        D --> I[Speed Control]
+        D --> J[Charging Control]
+``` 
 
 
 ## Setup and Installation
