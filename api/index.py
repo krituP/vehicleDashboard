@@ -248,8 +248,8 @@ def get_history():
                 }
             history.append(data)
         
-        print(f"Found {len(history)} historical records") # Debug log
-        print(f"Sample data: {history[:1] if history else 'No data'}") # Debug log
+        # print(f"Found {len(history)} historical records") # Debug log
+        # print(f"Sample data: {history[:1] if history else 'No data'}") # Debug log
         
         return jsonify(history)
     except Exception as e:
