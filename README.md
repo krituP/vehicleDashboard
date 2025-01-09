@@ -67,4 +67,48 @@ D --> J[Charging Control]
 - Node.js (for local development)
 - Google Cloud account with Firestore enabled
 
-### Environment Variables
+
+## Simulation Parameters
+
+| Parameter | Value | Description |
+|-----------|-------|------------|
+| Battery Drain Rate | 0.1%/s | When motor is running |
+| Charging Rate | 0.2%/s | When charging |
+| Temperature Increase | 0.1°C/s | When motor is running |
+| Temperature Decrease | 0.05°C/s | When motor is off |
+| Max RPM | 800 | Maximum motor speed |
+| Update Interval | 1000ms | Status refresh rate |
+
+## Performance Considerations
+
+- Real-time updates limited to 1-second intervals
+- Historical data stored every 3 seconds
+- Automatic cleanup of data older than 24 hours
+- Rate limiting implemented for API calls
+
+## Browser Compatibility
+
+| Browser | Supported Versions |
+|---------|-------------------|
+| Chrome | 60+ |
+| Firefox | 60+ |
+| Safari | 12+ |
+| Edge | 79+ |
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+- D3.js for gauge visualizations
+- Google Firebase for real-time database
+- Flask for backend API
