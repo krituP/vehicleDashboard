@@ -60,6 +60,62 @@ A real-time vehicle dashboard simulator that emulates key vehicle metrics includ
         D --> J[Charging Control]
 ``` 
 
+# API Documentation
+
+## API Endpoints and Their Interactions
+
+| Endpoint | Method | Description | Request Body | Response | Connected Services | Related Functions |
+|----------|---------|-------------|--------------|-----------|-------------------|------------------|
+| `/test` | GET | Basic server health check | None | ```json { "message": "Server is running!", "status": "OK" }``` | None | None |
+| `/api/test` | GET | Database connection test | None | ```json { "message": "Database connection successful", "data_exists": true }``` | Firestore | None |
+| `/api/status` | GET | Get current vehicle status | None | ```json { "motor": {...}, "battery": {...}, "indicators": {...} }``` | Firestore | - `updateDashboard()` (Frontend)<br>- `fetchVehicleStatus()` (Frontend) |
+| `/api/motor/rpm` | PUT | Update motor RPM | ```json { "rpm": number }``` | ```json { "success": true, "new_rpm": number }``` | Firestore | - `calculate_power_consumption()`<br>- Background thread updates |
+| `/api/battery/charging` | PUT | Toggle charging state | ```json { "isCharging": boolean }``` | ```json { "success": true, "isCharging": boolean }``` | Firestore | - Background thread updates<br>- Motor RPM reset |
+| `/api/history` | GET | Fetch historical data | None | ```json [{ "timestamp": {...}, "rpm": number, ... }]``` | Firestore | - `store_historical_data()`<br>- `cleanup_old_data()` |
+| `/api/cleanup` | POST | Remove old records | None | ```json { "message": "Deleted X old records" }``` | Firestore | `cleanup_old_data()` |
+
+## Background Services
+
+| Service | Interval | Description | Connected APIs | Database Operations |
+|---------|----------|-------------|----------------|-------------------|
+| `update_battery_status()` | 1s | Updates battery percentage, temperature, and power consumption | None | - Read vehicle status<br>- Update vehicle status |
+| `store_historical_data()` | 3s | Logs vehicle metrics | None | - Write to vehicleHistory collection |
+| Frontend Status Update | 1s | Polls current vehicle status | `/api/status` | None |
+
+## Data Flow Diagram
+```mermaid
+    graph TD
+        A[Frontend] -->|GET /api/status| B[Flask Backend]
+        A -->|PUT /api/motor/rpm| B
+        A -->|PUT /api/battery/charging| B
+        A -->|GET /api/history| B
+        B -->|Read/Write| C[Firestore]
+        D[Background Thread] -->|Update Status| C
+        D -->|Store History| C
+        E[Cleanup Service] -->|Delete Old Records| C
+```
+
+json
+{
+"motor": {
+"rpm": 0,
+"powerConsumption": 0,
+"gearRatio": "3:1",
+"isActive": false
+},
+"battery": {
+"percentage": 100,
+"temperature": 25,
+"isCharging": false,
+"lowBatteryThreshold": 20
+},
+"indicators": {
+"parkingBrake": false,
+"checkEngine": false,
+"motorActive": false,
+"batteryLow": false
+}
+}
 
 ## Setup and Installation
 
