@@ -19,7 +19,7 @@ A real-time vehicle dashboard simulator that emulates key vehicle metrics includ
 
 ```mermaid
     graph TD
-        A[Frontend] -->|HTTP Requests| B[Flask Backend]
+        A[Frontend] -->|HTTP Requests| B[Flask Backend(API)]
         B -->|Store/Retrieve| C[Firestore Database]
         B -->|Real-time Updates| A
         D[Background Tasks] -->|Update Vehicle Status| B
@@ -95,6 +95,58 @@ A real-time vehicle dashboard simulator that emulates key vehicle metrics includ
 | Firefox | 60+ |
 | Safari | 12+ |
 | Edge | 79+ |
+
+
+bash
+git clone https://github.com/kritup/VehicleDashboard.git
+cd VehicleDashboard
+backend
+bash
+Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate # On Windows: venv\Scripts\activate
+Install required packages
+pip install -r requirements.txt
+Set up Firebase credentials
+Place your firebase-adminsdk.json file in the database folder
+OR set GOOGLE_CREDENTIALS environment variable
+Start the Flask server
+python api/index.py
+:
+bash
+python -m http.server 3000
+
+- Navigate to `http://localhost:3000` in your browser
+
+### Option 2: Access Live Demo
+
+Visit [kritupatel.com/vehicleDashboard](https://kritupatel.com/vehicleDashboard)
+
+⚠️ **Important Note**: 
+- The backend is hosted on Render's free tier which spins down after 15 minutes of inactivity
+- Initial requests may take 30-60 seconds while the server spins up
+- Subsequent requests will work normally once the server is running
+
+### Expected Behavior
+1. The dashboard will display two gauges:
+   - RPM Gauge (0-800 RPM)
+   - Power Consumption Gauge (-1000 to 1000 kW)
+2. Status indicators show:
+   - Battery percentage
+   - Temperature
+   - Motor status
+   - Charging status
+3. Controls available:
+   - Speed control slider (0-4 settings)
+   - Charging toggle
+   - History view
+
+### Troubleshooting
+- If gauges don't update, check the browser console for connection errors
+- Ensure your browser supports JavaScript and WebSocket connections
+- Clear browser cache if you experience display issues
+- For local setup, ensure ports 5001 (backend) and 3000 (frontend) are available
+
 
 ## Contributing
 
